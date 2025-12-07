@@ -1,8 +1,10 @@
+import 'react-native-get-random-values';
 import { View, Text, StyleSheet, TextInput, Pressable, Alert, Platform } from 'react-native';
 import { router, UnknownOutputParams, useLocalSearchParams } from 'expo-router';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
-import { v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
+import Toast from 'react-native-toast-message';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { categories } from '@/constants/categories';
 import { CategoryType, ExpenseType } from '@/typings';
@@ -54,12 +56,19 @@ export default function CreateScreen() {
     }
 
     const expense: ExpenseType = {
-      id: v4(),
+      id: uuidv4(),
       title, 
       amount: Number(amount),
       category: category.id,
-      date: date.toString()
+      date: date.toDateString()
     }
+
+    console.log("We got here!!!");
+
+    Toast.show({
+      type: "success",
+      text1: "Expense successfully added",
+    });
 
     console.log("data ::: ", expense);
 
@@ -138,6 +147,7 @@ export default function CreateScreen() {
               <Text style={{ color: "#ffffff", fontSize: 20 }}>Add Expense</Text>
             </Pressable>
         </View>
+        <Toast />
       </SafeAreaView>
     </SafeAreaProvider>
   );
