@@ -1,18 +1,29 @@
 import { router } from 'expo-router';
 import { StyleSheet, View, Text, FlatList, Pressable } from 'react-native';
-
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 import { categories } from '@/constants/categories';
 import { CategoryType } from '@/typings';
-import { navigate } from 'expo-router/build/global-state/routing';
 
 export default function CategoriesScreen() {
   const renderCategories = (category: CategoryType) => {
     return (
       <Pressable 
-        style={{ borderRadius: 8, borderWidth: 1, borderColor: "transparent", backgroundColor: "#ffffff", margin: 8, flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 24 }} 
+        style={{ 
+          alignItems: "center", 
+          backgroundColor: "#ffffff", 
+          borderColor: "transparent", 
+          borderRadius: 8, 
+          borderWidth: 1, 
+          display: "flex", 
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "center", 
+          margin: 8, 
+          padding: 24 
+        }} 
         onPress={() => {
-          router.navigate({ pathname: "/create", params: { category: category.id }})
+          router.dismissTo({ pathname: "/create", params: { category: category.id }});
         }}>
         <Text style={{ marginBottom: 8 }}>
           {category.icon}
@@ -30,7 +41,14 @@ export default function CategoriesScreen() {
           <Text style={{ fontWeight: "bold", fontSize: 32, marginBottom: 8 }}>Select Category</Text>
           <Text>Select a category that best describes what you spent money on</Text>
         </View>
-        <FlatList style={{ width: "100%" }} showsVerticalScrollIndicator={false} renderItem={({ item }) => renderCategories(item)} data={categories} numColumns={2} keyExtractor={category => category.id.toString()} />
+        <FlatList 
+          style={{ width: "100%" }} 
+          showsVerticalScrollIndicator={false} 
+          renderItem={({ item }) => renderCategories(item)} 
+          data={categories} 
+          numColumns={2} 
+          keyExtractor={category => category.id.toString()} 
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -44,7 +62,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   link: {
-    marginTop: 15,
-    paddingVertical: 15,
+    marginTop: 16,
+    paddingVertical: 16,
   },
 });

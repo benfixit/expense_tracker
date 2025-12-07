@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-nativ
 import { router, UnknownOutputParams, useLocalSearchParams } from 'expo-router';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { categories } from '@/constants/categories';
 import { CategoryType, ExpenseType } from '@/typings';
 import { useExpenses } from '@/store/ExpensesProvider';
@@ -10,6 +11,8 @@ import { useExpenses } from '@/store/ExpensesProvider';
 export default function CreateScreen() {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
   const [category, setCategory] = useState<CategoryType>(categories[0]);
   const params = useLocalSearchParams<UnknownOutputParams & { category: string}>();
   const { updateExpenses } = useExpenses();
@@ -20,13 +23,33 @@ export default function CreateScreen() {
 
       setCategory(selectedCategory);
     }
-  }, []);
+  }, [params.category]);
+
+  const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    const { type } = event;
+
+    if (type === "set") {
+      setDate(selectedDate as Date);
+      console.log("event ::: ", selectedDate);
+      // console.log("selected date ::: ", selectedDate)
+      // setShowPicker(false);
+    }
+
+    togglePicker();
+  }
+
+  const togglePicker = () => {
+    setShowPicker(!showPicker);
+  }
 
   const submitExpense = () => {
+    console.log(amount, title, category)
     if (!amount || !title) {
       Alert.alert("All fields are required");
       return;
     }
+
+    return;
 
     const expense: ExpenseType = {
       id: "",
@@ -67,6 +90,13 @@ export default function CreateScreen() {
               <Text style={{ marginRight: 8 }}>{category.icon}</Text>
               <Text>{category.title}</Text>
             </Pressable>
+          </View>
+          <View>
+            <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Date</Text>
+            <Pressable onPress={togglePicker}>
+              <TextInput placeholder={(new Date()).toDateString()} value={date.toDateString()} style={styles.textInput} editable={false} />
+            </Pressable>
+            {showPicker && <DateTimePicker mode='date' display='spinner' value={date} onChange={handleDateChange} />}
           </View>
         </View>
         <View style={styles.submit}>

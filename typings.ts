@@ -19,3 +19,16 @@ export type InsightCategoryType = {
     percentage: number,
     color: string
 }
+
+export type Currency = "NGN" | "USD" | "EUR"
+
+export type CurrencyOptionsType = {
+    title: Currency,
+    value: Currency,
+    icon: string,
+    symbol: string
+}
+
+export type SettingsType = {
+    currency: Currency
+}

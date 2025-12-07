@@ -8,11 +8,10 @@ import { ExpenseType, InsightCategoryType } from '@/typings';
 import Ionicons from '@react-native-vector-icons/ionicons';
 
 export default function InsightsScreen() {
-  const { expenses } = useExpenses();
+  const { expenses, totalExpenses } = useExpenses();
 
   const groupExpensesByCategory = (expenses: Array<ExpenseType>) => {
     console.log("processing the expenses");
-    const totalExpenses = expenses.reduce((acc, expense) => acc += expense.amount, 0);
 
     const pieChartData: Array<pieDataItem> = [];
     const flatListData: Array<InsightCategoryType> = [];
@@ -24,7 +23,7 @@ export default function InsightsScreen() {
         const categoryTotal= expensesUnderCategory.reduce((acc, expense) => acc += expense.amount, 0);
         const percentage = (categoryTotal / totalExpenses) * 100;
 
-        pieChartData.push({ text: `${percentage.toFixed(2)}%`, value: categoryTotal, textBackgroundColor: category.color });
+        pieChartData.push({ text: `${percentage.toFixed(2)}%`, value: categoryTotal, color: category.color, labelPosition: "outward" });
 
         flatListData.push({ title: category.title, amount: categoryTotal, percentage, color: category.color });
       }
@@ -66,7 +65,12 @@ export default function InsightsScreen() {
         <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
           <PieChart showText donut data={pieChartData} textColor="#ffffff" innerRadius={50} />
         </View>
-        <FlatList showsVerticalScrollIndicator={false} data={flatListData} renderItem={({ item }) => renderItem(item)} keyExtractor={(item) => item.title} />
+        <FlatList 
+          showsVerticalScrollIndicator={false} 
+          data={flatListData} 
+          renderItem={({ item }) => renderItem(item)} 
+          keyExtractor={(item) => item.title} 
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   );

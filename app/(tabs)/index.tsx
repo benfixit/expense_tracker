@@ -1,25 +1,34 @@
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { CategoryType, ExpenseType } from "@/typings";
+import { CategoryType, CurrencyOptionsType, ExpenseType } from "@/typings";
 import { categories } from '@/constants/categories';
 import { expenses } from '@/constants/expenses';
 import EmptyExpenses from '@/components/EmptyExpenses';
+import { useExpenses } from '@/store/ExpensesProvider';
+import { useSettings } from '@/store/SettingsProvider';
+import { currencyOptions } from '@/constants/app';
 
 export default function HomeScreen() {
+  const { totalExpenses } = useExpenses();
+  const { currency: currencyValue } = useSettings();
+  const currency = currencyOptions.find(option => option.value === currencyValue) as CurrencyOptionsType;
+
   const renderExpenses = (expense: ExpenseType) => {
     const category = categories.find(category => category.id === expense.category) as CategoryType;
 
     return (
       <View style={styles.itemWrapper}>
-        <Text style={styles.icon}>{category.icon}</Text>
+        <View style={styles.icon}>
+          <Text style={styles.iconText}>{category.icon}</Text>
+        </View>
         <View style={styles.title}>
           <Text>{expense.title}</Text>
-          <Text style={{ backgroundColor: category.color, borderRadius: 8, paddingHorizontal: 4, paddingVertical: 2 }}>{category.title}</Text>
+          <Text style={{ backgroundColor: category.color, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2 }}>{category.title}</Text>
         </View>
         <View style={styles.price}>
-          <Text>${expense.amount}</Text>
-          <Text>{expense.date}</Text>
+          <Text style={{ fontWeight: "bold", textAlign: "right" }}>{currency.symbol}{expense.amount}</Text>
+          <Text style={{ textAlign: "right" }}>{expense.date}</Text>
         </View>
       </View>
     );
@@ -35,7 +44,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.summary}>
           <Text style={{ fontSize: 16, color: "#cdcdcd", textAlign: "center" }}>Spent so far</Text>
-          <Text style={{ fontSize: 40, color: "#ffffff", textAlign: "center" }}>$1000</Text>
+          <Text style={{ fontSize: 40, color: "#ffffff", textAlign: "center" }}>{currency.symbol}{totalExpenses}</Text>
         </View>
         {expenses ? <FlatList style={styles.list} showsVerticalScrollIndicator={false} renderItem={({ item }) => renderExpenses(item)} data={expenses} keyExtractor={(item) => item.id} /> : <EmptyExpenses />}
       </SafeAreaView>
@@ -92,20 +101,23 @@ const styles = StyleSheet.create({
     backgroundColor: "#eeeeee",
     borderRadius: 12,
     borderColor: "transparent",
-    borderWidth: 1,
     display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 16,
-    textAlign: "center",
-    textAlignVertical: "center",
+  },
+  iconText: {
     fontSize: 24
   },
   title: {
-    flex: 3,
-    // display: "flex",
-    // flexDirection: "column",
-    // justifyContent: "center",
+    flex: 2,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start"
   },
   price: {
-    flex: 1
+    display: "flex",
+    justifyContent: "center"
   }
 });

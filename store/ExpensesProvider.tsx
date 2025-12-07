@@ -1,4 +1,4 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useMemo, useState } from "react";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import { APP_NAME } from "@/constants/app";
 import { ExpenseType } from "@/typings";
@@ -10,16 +10,19 @@ type Props = {
 
 type ValueType = {
     expenses: Array<ExpenseType>;
-    updateExpenses: (expense: ExpenseType) => void
+    updateExpenses: (expense: ExpenseType) => void;
+    totalExpenses: number
 }
 
 const STORAGE_KEY = `${APP_NAME}_expenses`;
 
-const ExpensesContext = createContext<ValueType>({ expenses: [], updateExpenses: () => {} });
+const ExpensesContext = createContext<ValueType>({ expenses: [], updateExpenses: () => {}, totalExpenses: 0 });
 
 const ExpensesProvider = ({ children }: Props) => {
     const [expenses, setExpenses] = useState<Array<ExpenseType>>(data);
     const { getItem, setItem } = useAsyncStorage(STORAGE_KEY);
+
+    const totalExpenses = useMemo(() => expenses.reduce((acc, expense) => acc += expense.amount, 0), [expenses]);
 
     useEffect(() => {
         const fetchExpenses = async () => {
@@ -44,7 +47,7 @@ const ExpensesProvider = ({ children }: Props) => {
     }
 
     return (
-        <ExpensesContext.Provider value={{ expenses, updateExpenses }}>
+        <ExpensesContext.Provider value={{ expenses, updateExpenses, totalExpenses }}>
             {children}
         </ExpensesContext.Provider>
     );
