@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { format } from "date-fns";
 import { CategoryType, CurrencyOptionsType, ExpenseType } from "@/typings";
 import { categories } from '@/constants/categories';
 import EmptyExpenses from '@/components/EmptyExpenses';
@@ -26,7 +27,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.price}>
           <Text style={{ fontWeight: "bold", textAlign: "right" }}>{currency.symbol}{expense.amount}</Text>
-          <Text style={{ textAlign: "right" }}>{expense.date}</Text>
+          <Text style={{ textAlign: "right" }}>{format(expense.date, 'yyyy-MM-dd')}</Text>
         </View>
       </View>
     );

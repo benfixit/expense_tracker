@@ -1,5 +1,5 @@
 import 'react-native-get-random-values';
-import { View, Text, StyleSheet, TextInput, Pressable, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { router, UnknownOutputParams, useLocalSearchParams } from 'expo-router';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
@@ -50,106 +50,115 @@ export default function CreateScreen() {
   }
 
   const submitExpense = () => {
-    if (!amount || !title) {
-      Alert.alert("All fields are required");
+    if (!title) {
+      Alert.alert("The title field is required");
       return;
     }
+
+    if (!amount) {
+      Alert.alert("The amount field is required");
+      return;
+    }
+
+    const trimmedAmount = amount.replace(/[^0-9]/g, "");
 
     const expense: ExpenseType = {
       id: uuidv4(),
       title, 
-      amount: Number(amount),
+      amount: Number(trimmedAmount),
       category: category.id,
       date: date.toDateString()
     }
-
-    console.log("We got here!!!");
 
     Toast.show({
       type: "success",
       text1: "Expense successfully added",
     });
 
-    console.log("data ::: ", expense);
-
-    return;
-
     updateExpenses(expense);
 
-    Alert.alert("Successfully added");
-
-    console.log("data ::: ", amount, title)
+    router.navigate({ pathname: "/" });
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.heading}>
-          <Text style={styles.caption}>Add new expense</Text>
-          <Text style={styles.meta}>Enter the details of your expense to help you track your spending</Text>
-        </View>
-        <View style={styles.form}>
-          <View style={{ marginBottom: 24 }}>
-            <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Title</Text>
-            <TextInput placeholder="What was it for" value={title} onChangeText={setTitle} style={styles.textInput} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.heading}>
+            <Text style={styles.caption}>Add new expense</Text>
+            <Text style={styles.meta}>Enter the details of your expense to help you track your spending</Text>
           </View>
-          <View style={{ marginBottom: 24 }}>
-            <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Amount</Text>
-            <TextInput placeholder="$0.00" value={amount} onChangeText={setAmount} style={styles.textInput} />
-          </View>
-          <View style={{ marginBottom: 24 }}>
-            <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Category</Text>
-            <Pressable 
-              style={{ borderWidth: 1, borderColor: "#888888", borderRadius: 10, paddingHorizontal: 16, paddingBottom: 16, paddingTop: 16, display: "flex", flexDirection: "row" }}
-              onPress={() => router.navigate("/categories")}>
-              <Text style={{ marginRight: 8 }}>{category.icon}</Text>
-              <Text>{category.title}</Text>
-            </Pressable>
-          </View>
-          <View>
-            <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Date</Text>
-            <Pressable onPress={togglePicker}>
+          <View style={styles.form}>
+            <View style={{ marginBottom: 24 }}>
+              <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Title</Text>
+              <TextInput placeholder="What was it for" value={title} onChangeText={setTitle} style={styles.textInput} />
+            </View>
+            <View style={{ marginBottom: 24 }}>
+              <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Amount</Text>
               <TextInput 
-                placeholder={(new Date()).toDateString()} 
-                value={date.toDateString()} 
+                placeholder="$0.00" 
+                value={amount} 
+                onChangeText={setAmount} 
                 style={styles.textInput} 
-                editable={false}
-                onPressIn={togglePicker}
+                keyboardType={Platform.OS === "android" ? "numeric" : "number-pad"} 
               />
-            </Pressable>
-            {showPicker && (
-              <>
-                <DateTimePicker mode='date' display='spinner' value={date} onChange={handleDateChange} style={styles.datePicker} />
-                {Platform.OS === "ios" && (
-                  <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", columnGap: 8 }}>
-                    <Pressable onPress={togglePicker} style={{ flex: 1, height: 40, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff", borderColor: "#888888", borderRadius: 8, borderWidth: 1 }}><Text>Cancel</Text></Pressable>
-                    <Pressable onPress={() => iosHandleDateChange(date)} style={{ flex: 1, height: 40, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#000000", borderRadius: 8, }}><Text style={{ color: "#ffffff" }}>OK</Text></Pressable>
-                  </View>
-                )}
-              </>
-            )}
+            </View>
+            <View style={{ marginBottom: 24 }}>
+              <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Category</Text>
+              <Pressable 
+                style={{ borderWidth: 1, borderColor: "#888888", borderRadius: 10, paddingHorizontal: 16, paddingBottom: 16, paddingTop: 16, display: "flex", flexDirection: "row" }}
+                onPress={() => router.navigate("/categories")}>
+                <Text style={{ marginRight: 8 }}>{category.icon}</Text>
+                <Text>{category.title}</Text>
+              </Pressable>
+            </View>
+            <View>
+              <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Date</Text>
+              <Pressable onPress={togglePicker}>
+                <TextInput 
+                  placeholder={(new Date()).toDateString()} 
+                  value={date.toDateString()} 
+                  style={styles.textInput} 
+                  editable={false}
+                  onPressIn={togglePicker}
+                />
+              </Pressable>
+              {showPicker && (
+                <>
+                  <DateTimePicker mode='date' display='spinner' value={date} onChange={handleDateChange} style={styles.datePicker} />
+                  {Platform.OS === "ios" && (
+                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", columnGap: 8 }}>
+                      <Pressable onPress={togglePicker} style={{ flex: 1, height: 40, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff", borderColor: "#888888", borderRadius: 8, borderWidth: 1 }}><Text>Cancel</Text></Pressable>
+                      <Pressable onPress={() => iosHandleDateChange(date)} style={{ flex: 1, height: 40, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#000000", borderRadius: 8, }}><Text style={{ color: "#ffffff" }}>OK</Text></Pressable>
+                    </View>
+                  )}
+                </>
+              )}
+            </View>
           </View>
-        </View>
-        <View style={styles.submit}>
-            <Pressable style={{ 
-                          borderWidth: 1, 
-                          borderColor: "#888888", 
-                          borderRadius: 10, 
-                          paddingHorizontal: 24, 
-                          paddingBottom: 24, 
-                          paddingTop: 24, 
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "row", 
-                          backgroundColor: "#000000" 
-                        }}
-                        onPress={submitExpense}>
-              <Text style={{ color: "#ffffff", fontSize: 20 }}>Add Expense</Text>
-            </Pressable>
-        </View>
-        <Toast />
-      </SafeAreaView>
-    </SafeAreaProvider>
+          <View style={styles.submit}>
+              <Pressable 
+                style={{ 
+                  borderWidth: 1, 
+                  borderColor: "#888888", 
+                  borderRadius: 10, 
+                  paddingHorizontal: 24, 
+                  paddingBottom: 24, 
+                  paddingTop: 24, 
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "row", 
+                  backgroundColor: "#000000" 
+                }}
+                onPress={submitExpense}
+              >
+                <Text style={{ color: "#ffffff", fontSize: 20 }}>Add Expense</Text>
+              </Pressable>
+          </View>
+          <Toast />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </TouchableWithoutFeedback>
   );
 }
 
