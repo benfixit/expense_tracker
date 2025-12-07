@@ -1,18 +1,15 @@
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryType, CurrencyOptionsType, ExpenseType } from "@/typings";
 import { categories } from '@/constants/categories';
-import { expenses } from '@/constants/expenses';
 import EmptyExpenses from '@/components/EmptyExpenses';
 import { useExpenses } from '@/store/ExpensesProvider';
 import { useSettings } from '@/store/SettingsProvider';
 import { currencyOptions } from '@/constants/app';
 
 export default function HomeScreen() {
-  const { totalExpenses } = useExpenses();
+  const { expenses, totalExpenses } = useExpenses();
   const { currency: currencyValue } = useSettings();
-  console.log("currency ::: ", currencyValue);
   const currency = currencyOptions.find(option => option.value === currencyValue) as CurrencyOptionsType;
 
   const renderExpenses = (expense: ExpenseType) => {
@@ -47,7 +44,7 @@ export default function HomeScreen() {
           <Text style={{ fontSize: 16, color: "#cdcdcd", textAlign: "center" }}>Spent so far</Text>
           <Text style={{ fontSize: 40, color: "#ffffff", textAlign: "center" }}>{currency.symbol}{totalExpenses}</Text>
         </View>
-        {expenses ? <FlatList style={styles.list} showsVerticalScrollIndicator={false} renderItem={({ item }) => renderExpenses(item)} data={expenses} keyExtractor={(item) => item.id} /> : <EmptyExpenses />}
+        {expenses.length ? <FlatList style={styles.list} showsVerticalScrollIndicator={false} renderItem={({ item }) => renderExpenses(item)} data={expenses} keyExtractor={(item) => item.id} /> : <EmptyExpenses />}
       </SafeAreaView>
     </SafeAreaProvider>
   );

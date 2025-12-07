@@ -1,8 +1,7 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import { APP_NAME } from "@/constants/app";
 import { ExpenseType } from "@/typings";
-import { expenses as data } from "@/constants/expenses";
 
 type Props = {
     children: ReactNode;
@@ -19,7 +18,7 @@ const STORAGE_KEY = `${APP_NAME}_expenses`;
 const ExpensesContext = createContext<ValueType>({ expenses: [], updateExpenses: () => {}, totalExpenses: 0 });
 
 const ExpensesProvider = ({ children }: Props) => {
-    const [expenses, setExpenses] = useState<Array<ExpenseType>>(data);
+    const [expenses, setExpenses] = useState<Array<ExpenseType>>([]);
     const { getItem, setItem } = useAsyncStorage(STORAGE_KEY);
 
     const totalExpenses = useMemo(() => expenses.reduce((acc, expense) => acc += expense.amount, 0), [expenses]);
@@ -38,12 +37,12 @@ const ExpensesProvider = ({ children }: Props) => {
     }, []);
 
     // takes in an expense and updates the list, then push to async store
-    const updateExpenses = (expense: ExpenseType) => {
+    const updateExpenses = async (expense: ExpenseType) => {
         const newExpenses = [...expenses, expense];
 
         setExpenses(newExpenses);
 
-        setItem(JSON.stringify(newExpenses));
+        await setItem(JSON.stringify(newExpenses));
     }
 
     return (

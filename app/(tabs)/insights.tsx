@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { categories } from '@/constants/categories';
 import { ExpenseType, InsightCategoryType } from '@/typings';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import EmptyInsights from '@/components/EmptyInsights';
 
 export default function InsightsScreen() {
   const { expenses, totalExpenses } = useExpenses();
@@ -62,26 +63,31 @@ export default function InsightsScreen() {
         <View style={{ marginBottom: 24 }}>
           <Text style={{ fontSize: 32, fontWeight: "bold", textAlign: "center" }}>Spending Summary</Text>
         </View>
-        <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-          <PieChart 
-            // showText 
-            donut 
-            data={pieChartData} 
-            // textColor="#ffffff" 
-            innerRadius={50}
-            // textColor="black"
-            radius={150}
-            // textSize={10}
-            // showTextBackground
-            // textBackgroundRadius={26}
-          />
-        </View>
-        <FlatList 
-          showsVerticalScrollIndicator={false} 
-          data={flatListData} 
-          renderItem={({ item }) => renderItem(item)} 
-          keyExtractor={(item) => item.title} 
-        />
+        {expenses.length ? (
+          <>
+            <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+              <PieChart 
+                // showText 
+                donut 
+                data={pieChartData} 
+                // textColor="#ffffff" 
+                innerRadius={50}
+                // textColor="black"
+                radius={150}
+                // textSize={10}
+                // showTextBackground
+                // textBackgroundRadius={26}
+              />
+            </View>
+            <FlatList 
+              showsVerticalScrollIndicator={false} 
+              data={flatListData} 
+              renderItem={({ item }) => renderItem(item)} 
+              keyExtractor={(item) => item.title} 
+            />
+          </>
+        ) : <EmptyInsights />}
+        
       </SafeAreaView>
     </SafeAreaProvider>
   );
