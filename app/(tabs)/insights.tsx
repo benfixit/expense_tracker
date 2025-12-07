@@ -63,7 +63,18 @@ export default function InsightsScreen() {
           <Text style={{ fontSize: 32, fontWeight: "bold", textAlign: "center" }}>Spending Summary</Text>
         </View>
         <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-          <PieChart showText donut data={pieChartData} textColor="#ffffff" innerRadius={50} />
+          <PieChart 
+            // showText 
+            donut 
+            data={pieChartData} 
+            // textColor="#ffffff" 
+            innerRadius={50}
+            // textColor="black"
+            radius={150}
+            // textSize={10}
+            // showTextBackground
+            // textBackgroundRadius={26}
+          />
         </View>
         <FlatList 
           showsVerticalScrollIndicator={false} 

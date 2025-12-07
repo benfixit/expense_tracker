@@ -12,6 +12,7 @@ import { currencyOptions } from '@/constants/app';
 export default function HomeScreen() {
   const { totalExpenses } = useExpenses();
   const { currency: currencyValue } = useSettings();
+  console.log("currency ::: ", currencyValue);
   const currency = currencyOptions.find(option => option.value === currencyValue) as CurrencyOptionsType;
 
   const renderExpenses = (expense: ExpenseType) => {

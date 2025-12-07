@@ -1,32 +1,61 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Picker } from '@react-native-picker/picker';
+import DropdownPicker from 'react-native-dropdown-picker';
 import { useSettings } from '@/store/SettingsProvider';
-import { Currency } from '@/typings';
 import { currencyOptions } from '@/constants/app';
 
-export default function InsightsScreen() {
+const items = currencyOptions.map(item => {
+  return {
+    label: item.title,
+    value: item.value
+  }
+})
+
+export default function SettingsScreen() {
   const { currency, updateSettings } = useSettings();
+  const [selectOpen, setSelectOpen] = useState(false);
+  const [selectValue, setSelectValue] = useState(currency);
+  const [selectItems, setSelectItems] = useState(items);
+  const [themeEnabled, setThemeEnabled] = useState(false);
 
-  const onSetCurrency = (currency: Currency) => {
-    updateSettings({ currency })
+  useEffect(() => {
+    updateSettings({ currency: selectValue })
+  }, [selectValue]);
 
+  const toggleSwitch = () => {
+    setThemeEnabled(!themeEnabled);
   }
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <View style={{ marginBottom: 16 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>Currency</Text>
-          <Picker 
-            selectedValue={currency} 
-            onValueChange={onSetCurrency}
-            prompt='Select currency'
-          >
-            {currencyOptions.map(option => (
-              <Picker.Item label={option.title} value={option.value} />
-            ))}
-          </Picker>
+          <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 16 }}>Theme</Text>
+          <View style={{ borderWidth: 1, borderColor: "#888888", borderRadius: 10, paddingHorizontal: 8, paddingVertical: 10, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <Text>Dark Mode</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: "#009900" }}
+              thumbColor={ themeEnabled ? "#ffffff" : '#f4f3f4' }
+              ios_backgroundColor={"#3e3e3e"}
+              onValueChange={toggleSwitch}
+              value={themeEnabled}
+              style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.8 }] }} // Example of resizing
+            />
+          </View>
+        </View>
+        <View style={{ marginBottom: 16 }}>
+          <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 16 }}>Currency</Text>
+          <DropdownPicker
+            open={selectOpen}
+            value={selectValue}
+            items={selectItems}
+            setOpen={setSelectOpen}
+            setValue={setSelectValue}
+            setItems={setSelectItems}
+            placeholder='Choose a currency.'
+            style={{ borderColor: "#888888" }}
+          />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

@@ -34,12 +34,11 @@ const SettingsProvider = ({ children }: Props) => {
 
     }, []);
 
-    const updateSettings = (data: Partial<SettingsType>) => {
+    const updateSettings = async (data: Partial<SettingsType>) => {
         const newSettings = {...settings, ...data};
 
         setSettings(newSettings);
-
-        setItem(JSON.stringify(settings));
+        await setItem(JSON.stringify(newSettings));
     }
 
     return (
