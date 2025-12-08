@@ -34,22 +34,22 @@ export default function InsightsScreen() {
 
   };
 
-    const { pieChartData, flatListData } = useMemo(() => groupExpensesByCategory(expenses), [expenses]);
+  const { pieChartData, flatListData } = useMemo(() => groupExpensesByCategory(expenses), [expenses]);
 
   const renderItem = (item: InsightCategoryType) => {
     return (
-      <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", paddingVertical: 16 }}>
-        <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-          <Ionicons name='ellipse' size={12} color={item.color} style={{ marginRight: 8 }} />
+      <View style={styles.renderItemView}>
+        <View style={styles.renderIconView}>
+          <Ionicons name='ellipse' size={12} color={item.color} style={styles.renderIcon} />
           <Text>
             {item.title}
           </Text>
         </View>
         <View>
-          <Text style={{ fontWeight: "bold" }}>
+          <Text style={styles.itemAmount}>
             ${item.amount.toFixed(2)}
           </Text>
-          <Text style={{ textAlign: "right" }}>
+          <Text style={styles.itemPercentage}>
             {item.percentage.toFixed(2)}%
           </Text>
         </View>
@@ -60,12 +60,12 @@ export default function InsightsScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 32, fontWeight: "bold", textAlign: "center" }}>Spending Summary</Text>
+        <View style={styles.view}>
+          <Text style={styles.summary}>Spending Summary</Text>
         </View>
         {expenses.length ? (
           <>
-            <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+            <View style={styles.viewChart}>
               <PieChart 
                 // showText 
                 donut 
@@ -103,4 +103,37 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 8,
   },
+  view: { 
+    marginBottom: 24 
+  },
+  summary: { 
+    fontSize: 32, 
+    fontWeight: "bold", 
+    textAlign: "center" 
+  },
+  viewChart: { 
+    display: "flex", 
+    flexDirection: "row", 
+    justifyContent: "center" 
+  },
+  renderItemView: { 
+    display: "flex", 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    paddingVertical: 16 
+  },
+  renderIconView: { 
+    display: "flex", 
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  renderIcon: { 
+    marginRight: 8 
+  },
+  itemAmount: { 
+    fontWeight: "bold" 
+  },
+  itemPercentage: { 
+    textAlign: "right" 
+  }
 });

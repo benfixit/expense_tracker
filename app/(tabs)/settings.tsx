@@ -30,9 +30,9 @@ export default function SettingsScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 16 }}>Theme</Text>
-          <View style={{ borderWidth: 1, borderColor: "#888888", borderRadius: 10, paddingHorizontal: 8, paddingVertical: 10, display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+        <View style={styles.themeWrapper}>
+          <Text style={styles.themeText}>Theme</Text>
+          <View style={styles.themeView}>
             <Text>Dark Mode</Text>
             <Switch
               trackColor={{ false: "#767577", true: "#009900" }}
@@ -40,12 +40,12 @@ export default function SettingsScreen() {
               ios_backgroundColor={"#3e3e3e"}
               onValueChange={toggleSwitch}
               value={themeEnabled}
-              style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.8 }] }} // Example of resizing
+              style={styles.themeSwitch} // Example of resizing
             />
           </View>
         </View>
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 16 }}>Currency</Text>
+        <View style={styles.currencyView}>
+          <Text style={styles.currencyText}>Currency</Text>
           <DropdownPicker
             open={selectOpen}
             value={selectValue}
@@ -54,7 +54,7 @@ export default function SettingsScreen() {
             setValue={setSelectValue}
             setItems={setSelectItems}
             placeholder='Choose a currency.'
-            style={{ borderColor: "#888888" }}
+            style={styles.dropdownPicker}
           />
         </View>
       </SafeAreaView>
@@ -72,4 +72,37 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 8,
   },
+  themeWrapper: { 
+    marginBottom: 16 
+  },
+  themeText: { 
+    fontWeight: "bold", 
+    fontSize: 20, 
+    marginBottom: 16 
+  },
+  themeView: { 
+    borderWidth: 1, 
+    borderColor: "#888888", 
+    borderRadius: 10, 
+    paddingHorizontal: 8, 
+    paddingVertical: 10, 
+    display: "flex", 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "space-between" 
+  },
+  themeSwitch: { 
+    transform: [{ scaleX: 0.7 }, { scaleY: 0.8 }] 
+  },
+  currencyView: { 
+    marginBottom: 16 
+  },
+  currencyText: { 
+    fontWeight: "bold", 
+    fontSize: 20, 
+    marginBottom: 16 
+  },
+  dropdownPicker: { 
+    borderColor: "#888888" 
+  }
 });
