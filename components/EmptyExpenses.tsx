@@ -6,7 +6,7 @@ export default function EmptyExpenses() {
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
         <View>
-          <Text style={{ fontSize: 40, marginBottom: 16, textAlign: "center" }}>
+          <Text style={styles.icon}>
             📝
           </Text>
           <Text style={styles.greeting}>
@@ -28,7 +28,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-},
+  },
+  icon: { 
+    fontSize: 40, 
+    marginBottom: 16, 
+    textAlign: "center" 
+  },
   greeting: {
     fontSize: 28,
     fontWeight: "bold",

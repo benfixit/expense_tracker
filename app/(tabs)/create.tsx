@@ -89,12 +89,12 @@ export default function CreateScreen() {
             <Text style={styles.meta}>Enter the details of your expense to help you track your spending</Text>
           </View>
           <View style={styles.form}>
-            <View style={{ marginBottom: 24 }}>
-              <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Title</Text>
+            <View style={styles.itemView}>
+              <Text style={styles.itemText}>Title</Text>
               <TextInput placeholder="What was it for" value={title} onChangeText={setTitle} style={styles.textInput} />
             </View>
-            <View style={{ marginBottom: 24 }}>
-              <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Amount</Text>
+            <View style={styles.itemView}>
+              <Text style={styles.itemText}>Amount</Text>
               <TextInput 
                 placeholder="$0.00" 
                 value={amount} 
@@ -103,17 +103,17 @@ export default function CreateScreen() {
                 keyboardType={Platform.OS === "android" ? "numeric" : "number-pad"} 
               />
             </View>
-            <View style={{ marginBottom: 24 }}>
-              <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Category</Text>
+            <View style={styles.itemView}>
+              <Text style={styles.itemText}>Category</Text>
               <Pressable 
-                style={{ borderWidth: 1, borderColor: "#888888", borderRadius: 10, paddingHorizontal: 16, paddingBottom: 16, paddingTop: 16, display: "flex", flexDirection: "row" }}
+                style={styles.categoryPressable}
                 onPress={() => router.navigate("/categories")}>
-                <Text style={{ marginRight: 8 }}>{category.icon}</Text>
+                <Text style={styles.categoryIcon}>{category.icon}</Text>
                 <Text>{category.title}</Text>
               </Pressable>
             </View>
             <View>
-              <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>Date</Text>
+              <Text style={styles.itemText}>Date</Text>
               <Pressable onPress={togglePicker}>
                 <TextInput 
                   placeholder={(new Date()).toDateString()} 
@@ -127,32 +127,25 @@ export default function CreateScreen() {
                 <>
                   <DateTimePicker mode='date' display='spinner' value={date} onChange={handleDateChange} style={styles.datePicker} />
                   {Platform.OS === "ios" && (
-                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", columnGap: 8 }}>
-                      <Pressable onPress={togglePicker} style={{ flex: 1, height: 40, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff", borderColor: "#888888", borderRadius: 8, borderWidth: 1 }}><Text>Cancel</Text></Pressable>
-                      <Pressable onPress={() => iosHandleDateChange(date)} style={{ flex: 1, height: 40, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#000000", borderRadius: 8, }}><Text style={{ color: "#ffffff" }}>OK</Text></Pressable>
+                    <View style={styles.datePickerView}>
+                      <Pressable onPress={togglePicker} style={styles.datePickerCancel}>
+                        <Text>Cancel</Text>
+                      </Pressable>
+                      <Pressable onPress={() => iosHandleDateChange(date)} style={styles.datePickerOk}>
+                        <Text style={styles.datePickerOkText}>OK</Text>
+                      </Pressable>
                     </View>
                   )}
                 </>
               )}
             </View>
           </View>
-          <View style={styles.submit}>
+          <View>
               <Pressable 
-                style={{ 
-                  borderWidth: 1, 
-                  borderColor: "#888888", 
-                  borderRadius: 10, 
-                  paddingHorizontal: 24, 
-                  paddingBottom: 24, 
-                  paddingTop: 24, 
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "row", 
-                  backgroundColor: "#000000" 
-                }}
+                style={styles.submitPressable}
                 onPress={submitExpense}
               >
-                <Text style={{ color: "#ffffff", fontSize: 20 }}>Add Expense</Text>
+                <Text style={styles.submitText}>Add Expense</Text>
               </Pressable>
           </View>
           <Toast />
@@ -185,9 +178,61 @@ const styles = StyleSheet.create({
   form: {
     marginBottom: 24
   },
+  itemView: {
+    marginBottom: 24
+  },
+  itemText: {
+    fontWeight: "bold",
+    fontSize: 18,
+    marginBottom: 8
+  },
+  amountView: {},
+  amountText: {},
+  categoryPressable: { 
+    borderWidth: 1, 
+    borderColor: "#888888", 
+    borderRadius: 10, 
+    paddingHorizontal: 16, 
+    paddingBottom: 16, 
+    paddingTop: 16, 
+    display: "flex", 
+    flexDirection: "row" 
+  },
+  categoryIcon: { 
+    marginRight: 8 
+  },
   datePicker: {
     maxHeight: 120,
     marginTop: -20,
+  },
+  datePickerView: { 
+    display: "flex", 
+    flexDirection: "row", 
+    justifyContent: "space-around", 
+    columnGap: 8 
+  },
+  datePickerCancel: { 
+    flex: 1, 
+    height: 40, 
+    display: "flex", 
+    justifyContent: "center", 
+    alignItems: "center", 
+    backgroundColor: "#ffffff", 
+    borderColor: "#888888", 
+    borderRadius: 8, 
+    borderWidth: 1 
+  },
+  datePickerOk: { 
+    flex: 1, 
+    height: 40, 
+    display: "flex", 
+    justifyContent: "center", 
+    alignItems: "center", 
+    backgroundColor: "#000000", 
+    borderRadius: 8
+  },
+  datePickerOkText: { 
+    color: "#ffffff"
   },
   textInput: {
     paddingHorizontal: 16,
@@ -197,6 +242,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10
   },
-  submit: {
+  submitPressable: { 
+    borderWidth: 1, 
+    borderColor: "#888888", 
+    borderRadius: 10, 
+    paddingHorizontal: 24, 
+    paddingBottom: 24, 
+    paddingTop: 24, 
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "row", 
+    backgroundColor: "#000000" 
+  },
+  submitText: { 
+    color: "#ffffff", 
+    fontSize: 20 
   }
 });

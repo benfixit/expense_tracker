@@ -23,11 +23,11 @@ export default function HomeScreen() {
         </View>
         <View style={styles.title}>
           <Text>{expense.title}</Text>
-          <Text style={{ backgroundColor: category.color, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2 }}>{category.title}</Text>
+          <Text style={{ ...styles.category, backgroundColor: category.color }}>{category.title}</Text>
         </View>
         <View style={styles.price}>
-          <Text style={{ fontWeight: "bold", textAlign: "right" }}>{currency.symbol}{expense.amount}</Text>
-          <Text style={{ textAlign: "right" }}>{format(expense.date, 'yyyy-MM-dd')}</Text>
+          <Text style={styles.amount}>{currency.symbol}{expense.amount}</Text>
+          <Text style={styles.date}>{format(expense.date, 'yyyy-MM-dd')}</Text>
         </View>
       </View>
     );
@@ -42,8 +42,8 @@ export default function HomeScreen() {
           <Text style={styles.message}>Start tracking your expenses easily.</Text>
         </View>
         <View style={styles.summary}>
-          <Text style={{ fontSize: 16, color: "#cdcdcd", textAlign: "center" }}>Spent so far</Text>
-          <Text style={{ fontSize: 40, color: "#ffffff", textAlign: "center" }}>{currency.symbol}{totalExpenses}</Text>
+          <Text style={styles.spent}>Spent so far</Text>
+          <Text style={styles.symbol}>{currency.symbol}{totalExpenses}</Text>
         </View>
         {expenses.length ? <FlatList style={styles.list} showsVerticalScrollIndicator={false} renderItem={({ item }) => renderExpenses(item)} data={expenses} keyExtractor={(item) => item.id} /> : <EmptyExpenses />}
       </SafeAreaView>
@@ -118,5 +118,27 @@ const styles = StyleSheet.create({
   price: {
     display: "flex",
     justifyContent: "center"
+  },
+  amount: { 
+    fontWeight: "bold", 
+    textAlign: "right" 
+  },
+  date: { 
+    textAlign: "right" 
+  },
+  category: { 
+    borderRadius: 8, 
+    paddingHorizontal: 8, 
+    paddingVertical: 2 
+  },
+  spent: { 
+    fontSize: 16, 
+    color: "#cdcdcd", 
+    textAlign: "center" 
+  },
+  symbol: { 
+    fontSize: 40, 
+    color: "#ffffff", 
+    textAlign: "center" 
   }
 });
