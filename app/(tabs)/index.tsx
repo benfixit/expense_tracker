@@ -1,15 +1,18 @@
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { format } from "date-fns";
+import { SwipeListView } from 'react-native-swipe-list-view';
 import { CategoryType, CurrencyOptionsType, ExpenseType } from "@/typings";
 import { categories } from '@/constants/categories';
 import EmptyExpenses from '@/components/EmptyExpenses';
 import { useExpenses } from '@/store/ExpensesProvider';
 import { useSettings } from '@/store/SettingsProvider';
 import { currencyOptions } from '@/constants/app';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
-  const { expenses, totalExpenses } = useExpenses();
+  const { expenses, totalExpenses, deleteExpense } = useExpenses();
   const { currency: currencyValue } = useSettings();
   const currency = currencyOptions.find(option => option.value === currencyValue) as CurrencyOptionsType;
 
@@ -32,6 +35,23 @@ export default function HomeScreen() {
       </View>
     );
   }
+
+  const renderHiddenItem = (expense: ExpenseType) => {
+    return (
+      <View style={styles.hiddenView}>
+        <Pressable style={{ ...styles.hiddenPressable, ...styles.hiddenPressableEdit }} onPress={() => {
+          // navigate to the create page and pass in the param
+          router.navigate({ pathname: "/create", params: { expenseId: expense.id }});
+        }}>
+            <Ionicons name='create' size={24} color={"#ffffff"}></Ionicons>
+        </Pressable>
+        <Pressable style={{ ...styles.hiddenPressable, ...styles.hiddenPressableDelete }} onPress={() => deleteExpense(expense)}>
+            <Ionicons name='trash' size={24} color={"#ffffff"}></Ionicons>
+        </Pressable>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -45,7 +65,16 @@ export default function HomeScreen() {
           <Text style={styles.spent}>Spent so far</Text>
           <Text style={styles.symbol}>{currency.symbol}{totalExpenses}</Text>
         </View>
-        {expenses.length ? <FlatList style={styles.list} showsVerticalScrollIndicator={false} renderItem={({ item }) => renderExpenses(item)} data={expenses} keyExtractor={(item) => item.id} /> : <EmptyExpenses />}
+        {expenses.length ? 
+          <SwipeListView
+            data={expenses}
+            renderItem={({ item }) => renderExpenses(item)}
+            renderHiddenItem={({ item }) => renderHiddenItem(item)}
+            rightOpenValue={-128}
+            disableRightSwipe
+          /> : 
+          <EmptyExpenses />
+        }
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -92,7 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderColor: "transparent",
     borderWidth: 1,
-    borderRadius: 12
+    borderRadius: 8
   },
   icon: {
     width: 60,
@@ -140,5 +169,26 @@ const styles = StyleSheet.create({
     fontSize: 40, 
     color: "#ffffff", 
     textAlign: "center" 
+  },
+  hiddenView: { 
+    display: "flex", 
+    flexDirection: 'row', 
+    justifyContent: "flex-end", 
+    flex: 1, 
+    alignItems: 'center',
+    columnGap: 4
+  },
+  hiddenPressable: { 
+    width: 60, 
+    height: "80%", 
+    alignItems: "center", 
+    justifyContent: "center",
+    borderRadius: 8
+  },
+  hiddenPressableEdit: {
+    backgroundColor: "#009900"
+  },
+  hiddenPressableDelete: {
+    backgroundColor: "#990000"
   }
 });

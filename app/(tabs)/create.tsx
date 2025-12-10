@@ -12,12 +12,27 @@ import { useExpenses } from '@/store/ExpensesProvider';
 
 export default function CreateScreen() {
   const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [category, setCategory] = useState<CategoryType>(categories[0]);
-  const params = useLocalSearchParams<UnknownOutputParams & { category: string}>();
-  const { updateExpenses } = useExpenses();
+  const params = useLocalSearchParams<UnknownOutputParams & { category: string, expenseId: ExpenseType['id']}>();
+  const { expenses, addExpense, editExpense } = useExpenses();
+  const [newExpense, setNewExpense] = useState<ExpenseType | null>(null);
+
+  useEffect(() => {
+    if (params.expenseId) {
+      const expense = expenses.find(expense => expense.id === params.expenseId) as ExpenseType;
+      setNewExpense(expense);
+
+      const selectedCategory = categories.find(category => category.id === expense.category) as CategoryType;
+
+      setTitle(expense.title);
+      setAmount(expense.amount);
+      setCategory(selectedCategory);
+      setDate(new Date(expense.date));
+    }
+  }, [params.expenseId]);
 
   useEffect(() => {
     if (params.category) {
@@ -49,6 +64,11 @@ export default function CreateScreen() {
     setShowPicker(!showPicker);
   }
 
+  const handleAmount = (amount: string) => {
+    const trimmedAmount = amount.replace(/[^0-9]/g, "");
+    setAmount(Number(trimmedAmount));
+  }
+
   const submitExpense = () => {
     if (!title) {
       Alert.alert("The title field is required");
@@ -60,22 +80,41 @@ export default function CreateScreen() {
       return;
     }
 
-    const trimmedAmount = amount.replace(/[^0-9]/g, "");
+    let message = "Expense successfully added";
 
-    const expense: ExpenseType = {
-      id: uuidv4(),
-      title, 
-      amount: Number(trimmedAmount),
-      category: category.id,
-      date: date.toDateString()
+    // Edit operation
+    if (newExpense !== null) {
+      newExpense.title = title;
+      newExpense.amount = amount;
+      newExpense.category = category.id;
+      newExpense.date = date.toDateString();
+
+      message = "Expense successfully edited";
+
+      setNewExpense(newExpense);
+      editExpense(newExpense);
+    } else {
+      const expense: ExpenseType = {
+        id: uuidv4(),
+        title, 
+        amount,
+        category: category.id,
+        date: date.toDateString()
+      }
+
+      addExpense(expense);
     }
 
     Toast.show({
       type: "success",
-      text1: "Expense successfully added",
+      text1: message,
     });
 
-    updateExpenses(expense);
+    // Reset form data
+    setTitle('');
+    setAmount(0);
+    setDate(new Date());
+    setCategory(categories[0]);
 
     router.navigate({ pathname: "/" });
   }
@@ -97,8 +136,8 @@ export default function CreateScreen() {
               <Text style={styles.itemText}>Amount</Text>
               <TextInput 
                 placeholder="$0.00" 
-                value={amount} 
-                onChangeText={setAmount} 
+                value={amount.toString()} 
+                onChangeText={handleAmount} 
                 style={styles.textInput} 
                 keyboardType={Platform.OS === "android" ? "numeric" : "number-pad"} 
               />

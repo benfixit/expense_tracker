@@ -32,3 +32,8 @@ export type CurrencyOptionsType = {
 export type SettingsType = {
     currency: Currency
 }
+
+export type ActionType = {
+    type: 'ADD' | 'EDIT' | 'DELETE' | 'SET_DATA'
+    payload: unknown
+}
